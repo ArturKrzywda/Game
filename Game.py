@@ -86,6 +86,7 @@ class Game():
         self.player.draw()
         for enemy in self.enemies:
             enemy.draw()
+        self.screen.blit(self.score_surf,(self.WIDTH/2-self.score_surf.get_width()/2,5))
         
     def collision(self):
         for enemy in self.enemies:
