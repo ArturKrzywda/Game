@@ -5,15 +5,40 @@ import Enemy
 
 class Button():
     def __init__(self,sc,WIDTH,HIGHT):
+        self.clicked = False
+        self.pressed = False
         self.screen = sc
-        self.idle = pg.image.load("Assets\\idlestart.png")
-        self.hover = pg.image.load("Assets\\hoverstart.png")
-        self.click = pg.image.load("Assets\\clickstart.png")
+        self.state = 1
+        self.idle = pg.image.load("Assets\\button\\idlestart.png") #1
+        self.hover = pg.image.load("Assets\\button\\hoverstart.png") #2
+        self.click = pg.image.load("Assets\\button\\clickstart.png") #3
         self.rect = self.idle.get_rect(midtop = (WIDTH/2,700))
         
     def draw(self):
-        self.screen.blit(self.idle,self.rect)
-        
+        if self.state == 1:
+            self.screen.blit(self.idle,self.rect)
+        elif self.state == 2:
+            self.screen.blit(self.hover,self.rect)
+        elif self.state == 3:
+            self.screen.blit(self.click,self.rect)
+    def update(self):
+        if self.rect.collidepoint(pg.mouse.get_pos()):
+            if pg.mouse.get_pressed()[0]:
+                self.state = 3
+                self.pressed = True
+            else:
+                if self.pressed == True:
+                    self.pressed = False
+                    self.clicked = True
+                self.state = 2
+        else:
+            self.state = 1
+    def isclicked(self):
+        if self.clicked:
+            return True
+        else:
+            return False
+
         
 
 
@@ -47,7 +72,7 @@ class Game():
         self.projectiles = []
         self.enemies = []
         self.player = Player.Player(self.screen,self.WIDTH,self.HIGHT)
-        self.delay = 60
+        self.delay = 30
         self.timer = 0 
         self.enemy_timer = pg.USEREVENT + 1
         pg.time.set_timer(self.enemy_timer,900)
@@ -112,9 +137,14 @@ class Game():
                 
                 if event.type == pg.KEYDOWN:
                         if event.key == pg.K_SPACE:
-                            if self.running == 2 or self.running == 3:
+                            if self.running == 2:
                                 self.reset()
                                 self.running = 1
+                if self.Button.isclicked():
+                    if self.running == 3:
+                        self.reset()
+                        self.running = 1
+
 
             if self.running == 1:
                 self.offscreen()
@@ -136,6 +166,7 @@ class Game():
                 self.screen.blit(self.resetf,(45, 700))
             if self.running == 3:
                 self.screen.blit(self.mainmenu,(0,0))
+                self.Button.update()
                 self.Button.draw()
                 # self.screen.fill((54, 176, 207))
                 # self.screen.blit(self.gamef,(self.WIDTH/2-90, 200))
