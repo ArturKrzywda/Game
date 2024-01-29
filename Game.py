@@ -61,6 +61,7 @@ class Game():
         self.clock = pg.time.Clock()
         self.FPS = FPS
 
+
         self.mainmenu = pg.image.load("Assets\\mainmenu.png")
 
         self.bg = pg.transform.scale(pg.image.load('Assets\\background.png'),(WIDTH,HIGHT))
@@ -71,6 +72,7 @@ class Game():
     def reset(self):
         self.projectiles = []
         self.enemies = []
+        self.score = 0
         self.player = Player.Player(self.screen,self.WIDTH,self.HIGHT)
         self.delay = 30
         self.timer = 0 
@@ -96,6 +98,7 @@ class Game():
                      if projectile.rect.colliderect(enemy.rect):
                          self.enemies.remove(enemy)
                          self.projectiles.remove(projectile)
+                         self.score += 1
 
     def back(self):
         self.screen.blit(self.bg,self.bgrect)
@@ -151,7 +154,9 @@ class Game():
                 self.createprojectile()
                 self.collision()
                 self.timer -= 1
-                
+
+                self.score_surf = self.font.render(str(self.score),True,(57, 67, 77))
+
                 for projectile in self.projectiles:
                     projectile.update()
                 for enemy in self.enemies:
@@ -159,18 +164,16 @@ class Game():
                 self.player.update()
 
                 self.DrawGame()
-            if self.running == 2:
-                
+                self.clock.tick(self.FPS)
+            if self.running == 2:  
                 self.screen.fill((54, 176, 207))
                 self.screen.blit(self.gameoverf,(self.WIDTH/2-140, 200))
                 self.screen.blit(self.resetf,(45, 700))
+                self.clock.tick(self.FPS)
             if self.running == 3:
                 self.screen.blit(self.mainmenu,(0,0))
                 self.Button.update()
                 self.Button.draw()
-                # self.screen.fill((54, 176, 207))
-                # self.screen.blit(self.gamef,(self.WIDTH/2-90, 200))
-                # self.screen.blit(self.startf,(60, 700))
 
             pg.display.update()
-            self.clock.tick(self.FPS)
+            
